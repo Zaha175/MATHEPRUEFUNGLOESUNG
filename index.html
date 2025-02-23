@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathematik-Prüfung mit Lösungen</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e6ecef 100%);
+            color: #2d3748;
+        }
+        h1 {
+            text-align: center;
+            color: #2b6cb0;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #2b6cb0;
+            font-size: 1.8em;
+            margin-top: 40px;
+            padding: 10px 15px;
+            background: #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        h3 {
+            color: #3182ce;
+            font-size: 1.4em;
+            margin-top: 20px;
+        }
+        p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        ol, ul {
+            margin-left: 25px;
+            margin-bottom: 20px;
+            padding-left: 15px;
+        }
+        li {
+            margin-bottom: 12px;
+            padding-left: 10px;
+            position: relative;
+        }
+        li:before {
+            content: "•";
+            color: #4a90e2;
+            font-size: 1.2em;
+            position: absolute;
+            left: -10px;
+        }
+        .teil {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        .teil:hover {
+            transform: translateY(-5px);
+        }
+        .formel {
+            font-style: italic;
+            font-weight: bold;
+            color: #2c5282;
+            background: #e6fffa;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .lösung {
+            background: #f7fafc;
+            padding: 15px;
+            border-left: 4px solid #4a90e2;
+            margin-top: 10px;
+            border-radius: 6px;
+        }
+        .graph {
+            background: #edf2f7;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+        }
+        b {
+            color: #2b6cb0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Mathematik-Prüfung mit Lösungen</h1>
+
+    <div class="teil">
+        <h2>📏 Aufgabe 1: Lineare Gleichungssysteme (10 Punkte)</h2>
+        <ol>
+            <li>Stelle die folgenden Gleichungen in die Form <span class="formel">y = mx + b</span> um:
+                <ol>
+                    <li>a) <span class="formel">2y - 2x = 2</span></li>
+                    <li>b) <span class="formel">y + 1 = 3x</span></li>
+                    <li>c) <span class="formel">3y - 2x = 2</span></li>
+                    <li>d) <span class="formel">4y - 4x = 4</span></li>
+                </ol>
+                <div class="lösung">
+                    <p><b>Lösung:</b></p>
+                    <p>a) <span class="formel">2y - 2x = 2</span></p>
+                    <p>→ <span class="formel">2y = 2x + 2</span> (addiere 2x auf beiden Seiten)</p>
+                    <p>→ <span class="formel">y = x + 1</span> (dividiere durch 2)</p>
+                    <p>b) <span class="formel">y + 1 = 3x</span></p>
+                    <p>→ <span class="formel">y = 3x - 1</span> (subtrahiere 1 auf beiden Seiten)</p>
+                    <p>c) <span class="formel">3y - 2x = 2</span></p>
+                    <p>→ <span class="formel">3y = 2x + 2</span> (addiere 2x)</p>
+                    <p>→ <span class="formel">y = (2/3)x + 2/3</span> (dividiere durch 3)</p>
+                    <p>d) <span class="formel">4y - 4x = 4</span></p>
+                    <p>→ <span class="formel">4y = 4x + 4</span> (addiere 4x)</p>
+                    <p>→ <span class="formel">y = x + 1</span> (dividiere durch 4)</p>
+                </div>
+            </li>
+            <li>Berechne die Anzahl der gemeinsamen Punkte der Geraden aus Teilaufgabe 1.
+                <div class="lösung">
+                    <p><b>Lösung:</b></p>
+                    <p>Geraden: a) <span class="formel">y = x + 1</span>, b) <span class="formel">y = 3x - 1</span>, c) <span class="formel">y = (2/3)x + 2/3</span>, d) <span class="formel">y = x + 1</span></p>
+                    <p>- a) und d) sind identisch (gleiche Steigung m = 1, gleicher y-Achsenabschnitt b = 1) → unendlich viele gemeinsame Punkte.</p>
+                    <p>- Vergleiche a) mit b): <span class="formel">x + 1 = 3x - 1</span></p>
+                    <p>→ <span class="formel">2 = 2x</span> → <span class="formel">x = 1</span>, <span class="formel">y = 2</span> (ein Schnittpunkt: (1|2))</p>
+                    <p>- Vergleiche a) mit c): <span class="formel">x + 1 = (2/3)x + 2/3</span></p>
+                    <p>→ <span class="formel">x - (2/3)x = 2/3 - 1</span> → <span class="formel">(1/3)x = -1/3</span> → <span class="formel">x = -1</span>, <span class="formel">y = 0</span> (ein Schnittpunkt: (-1|0))</p>
+                    <p><b>Ergebnis:</b> a) und d) haben unendlich viele Punkte, mit b) und c) je einen Schnittpunkt.</p>
+                </div>
+            </li>
+            <li>Löse das Lineare Gleichungssystem rechnerisch und bestimme die Lösungsmenge.
+                <div class="lösung">
+                    <p><b>Lösung (z. B. a) und b)):</b></p>
+                    <p><span class="formel">y = x + 1</span></p>
+                    <p><span class="formel">y = 3x - 1</span></p>
+                    <p>Gleichsetzen: <span class="formel">x + 1 = 3x - 1</span></p>
+                    <p>→ <span class="formel">2 = 2x</span> → <span class="formel">x = 1</span></p>
+                    <p>Einsetzen: <span class="formel">y = 1 + 1 = 2</span></p>
+                    <p><b>Lösungsmenge:</b> {(1|2)}</p>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <div class="teil">
+        <h2>📈 Aufgabe 2: Nullstellen von Parabeln (10 Punkte)</h2>
+        <p>Gegeben sind die Funktionen:</p>
+        <ul>
+            <li><b>Parabel 1:</b> <span class="formel">y = x² + 2x</span></li>
+            <li><b>Parabel 2:</b> <span class="formel">y = x² + 2x - 1</span></li>
+            <li><b>Parabel 3:</b> <span class="formel">y = x² + 2x + 2</span></li>
+        </ul>
+        <ol>
+            <li>Berechne die Nullstellen jeder Parabel mit der Mitternachtsformel.
+                <div class="lösung">
+                    <p><b>Mitternachtsformel:</b> <span class="formel">x = [-b ± √(b² - 4ac)] / (2a)</span></p>
+                    <p>1) <span class="formel">y = x² + 2x</span> (a = 1, b = 2, c = 0)</p>
+                    <p>→ <span class="formel">D = 2² - 4·1·0 = 4</span></p>
+                    <p>→ <span class="formel">x = [-2 ± √4] / 2 = [-2 ± 2] / 2</span></p>
+                    <p>→ <span class="formel">x₁ = 0, x₂ = -2</span></p>
+                    <p>2) <span class="formel">y = x² + 2x - 1</span> (a = 1, b = 2, c = -1)</p>
+                    <p>→ <span class="formel">D = 2² - 4·1·(-1) = 4 + 4 = 8</span></p>
+                    <p>→ <span class="formel">x = [-2 ± √8] / 2 = [-2 ± 2√2] / 2 = -1 ± √2</span></p>
+                    <p>→ <span class="formel">x₁ ≈ -2.414, x₂ ≈ 0.414</span></p>
+                    <p>3) <span class="formel">y = x² + 2x + 2</span> (a = 1, b = 2, c = 2)</p>
+                    <p>→ <span class="formel">D = 2² - 4·1·2 = 4 - 8 = -4</span></p>
+                    <p>→ <span class="formel">D < 0</span> → keine reellen Nullstellen</p>
+                </div>
+            </li>
+            <li>Vergleiche die Diskriminante <span class="formel">D = b² - 4ac</span> mit Null und erkläre die Bedeutung des Ergebnisses.
+                <div class="lösung">
+                    <p><b>Lösung:</b></p>
+                    <p>1) <span class="formel">D = 4 > 0</span> → 2 reelle Nullstellen</p>
+                    <p>2) <span class="formel">D = 8 > 0</span> → 2 reelle Nullstellen</p>
+                    <p>3) <span class="formel">D = -4 < 0</span> → keine reellen Nullstellen (Parabel liegt über der x-Achse)</p>
+                </div>
+            </li>
+            <li>Zeichne die Graphen der Parabeln in ein Koordinatensystem.
+                <div class="graph">
+                    <p><b>Wertetabelle für Parabel 1 (y = x² + 2x):</b></p>
+                    <p>x: -3 → y = 9 + (-6) = 3 | (-3|3)</p>
+                    <p>x: -2 → y = 4 + (-4) = 0 | (-2|0)</p>
+                    <p>x: 0 → y = 0 + 0 = 0 | (0|0)</p>
+                    <p><b>Scheitelpunkt:</b> x = -b/(2a) = -2/2 = -1 → y = 1 - 2 = -1 | (-1|-1)</p>
+                    <p><b>Beschreibung:</b> Öffnet nach oben, Nullstellen bei -2 und 0, Scheitel bei (-1|-1).</p>
+                    <p>(Ähnlich für die anderen Parabeln – zeichne sie mit diesen Punkten in ein Koordinatensystem!)</p>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <div class="teil">
+        <h2>🔍 Aufgabe 3: Streckung und Stauchung in y-Richtung (10 Punkte)</h2>
+        <p>Erstelle eine Wertetabelle für <span class="formel">-4 ≤ x ≤ 4</span> und zeichne die Parabeln.</p>
+        <ol>
+            <li><span class="formel">p₁: y = ½x²</span></li>
+            <li><span class="formel">p₂: y = -½x²</span></li>
+        </ol>
+        <div class="lösung">
+            <p><b>Wertetabelle p₁:</b></p>
+            <p>x = -4 → y = ½·16 = 8 | x = -2 → y = 2 | x = 0 → y = 0 | x = 2 → y = 2 | x = 4 → y = 8</p>
+            <p><b>Wertetabelle p₂:</b></p>
+            <p>x = -4 → y = -½·16 = -8 | x = -2 → y = -2 | x = 0 → y = 0 | x = 2 → y = -2 | x = 4 → y = -8</p>
+        </div>
+        <div class="graph">
+            <p><b>Beschreibung:</b> p₁ öffnet nach oben, gestaucht (flacher als y = x²), p₂ öffnet nach unten, ebenfalls gestaucht.</p>
+        </div>
+        <p class="hinweis"><b>Zusatzfrage:</b> Wie verändert sich die Form der Parabel, wenn der Faktor vor <span class="formel">x²</span> größer oder kleiner wird?</p>
+        <div class="lösung">
+            <p><b>Lösung:</b> Ein größerer Faktor (z. B. 2) macht die Parabel steiler, ein kleinerer (z. B. ½) flacher. Negativer Faktor spiegelt sie an der x-Achse.</p>
+        </div>
+    </div>
+
+    <div class="teil">
+        <h2>📍 Aufgabe 4: Scheitelpunkt einer Parabel und Parabelgleichungen (10 Punkte)</h2>
+        <ol>
+            <li>Bestimme den Scheitelpunkt der folgenden Parabeln durch quadratische Ergänzung:
+                <ol>
+                    <li>a) <span class="formel">y = x² + 8x + 17</span></li>
+                    <li>b) <span class="formel">y = x² - 20x + 50</span></li>
+                    <li>c) <span class="formel">y = x² - 7x</span></li>
+                </ol>
+                <div class="lösung">
+                    <p>a) <span class="formel">y = x² + 8x + 17</span></p>
+                    <p>→ <span class="formel">y = (x² + 8x + 16) + 17 - 16</span> (Ergänzung: (8/2)² = 16)</p>
+                    <p>→ <span class="formel">y = (x + 4)² + 1</span> → Scheitelpunkt: (-4|1)</p>
+                    <p>b) <span class="formel">y = x² - 20x + 50</span></p>
+                    <p>→ <span class="formel">y = (x² - 20x + 100) + 50 - 100</span> (Ergänzung: (-20/2)² = 100)</p>
+                    <p>→ <span class="formel">y = (x - 10)² - 50</span> → Scheitelpunkt: (10|-50)</p>
+                    <p>c) <span class="formel">y = x² - 7x</span></p>
+                    <p>→ <span class="formel">y = (x² - 7x + 12.25) - 12.25</span> (Ergänzung: (-7/2)² = 12.25)</p>
+                    <p>→ <span class="formel">y = (x - 3.5)² - 12.25</span> → Scheitelpunkt: (3.5|-12.25)</p>
+                </div>
+            </li>
+            <li>Bestimme die allgemeine Parabelgleichung der Form <span class="formel">y = x² + bx + c</span>, wenn der Scheitelpunkt gegeben ist:
+                <ol>
+                    <li>a) <span class="formel">S(-2 | 1)</span></li>
+                    <li>b) <span class="formel">S(-3 | -5)</span></li>
+                    <li>c) <span class="formel">S(4 | -5)</span></li>
+                </ol>
+                <div class="lösung">
+                    <p>Scheitelpunktform: <span class="formel">y = a(x - h)² + k</span>, hier a = 1</p>
+                    <p>a) S(-2|1) → <span class="formel">y = (x + 2)² + 1 = x² + 4x + 4 + 1 = x² + 4x + 5</span></p>
+                    <p>b) S(-3|-5) → <span class="formel">y = (x + 3)² - 5 = x² + 6x + 9 - 5 = x² + 6x + 4</span></p>
+                    <p>c) S(4|-5) → <span class="formel">y = (x - 4)² - 5 = x² - 8x + 16 - 5 = x² - 8x + 11</span></p>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <div class="teil">
+        <h2>🔗 Aufgabe 5: Zuordnung von Parabelgleichungen (10 Punkte)</h2>
+        <p><b>Allgemeine Form:</b></p>
+        <ol>
+            <li><span class="formel">p₁: y = x² - 2x - 4</span></li>
+            <li><span class="formel">p₂: y = x² + 2x - 4</span></li>
+            <li><span class="formel">p₃: y = x² + 4x + 1</span></li>
+            <li><span class="formel">p₄: y = x² - 4x + 1</span></li>
+        </ol>
+        <p><b>Scheitelpunktform:</b></p>
+        <ol>
+            <li><span class="formel">q: y = (x - 2)² + 4</span></li>
+            <li><span class="formel">r: y = (x + 2)² + 3</span></li>
+            <li><span class="formel">s: y = (x - 1)² - 5</span></li>
+            <li><span class="formel">t: y = (x + 2)² - 3</span></li>
+        </ol>
+        <div class="lösung">
+            <p><b>Lösung:</b></p>
+            <p>p₁: <span class="formel">y = x² - 2x - 4 = (x - 1)² - 1 - 4 = (x - 1)² - 5</span> → passt zu s</p>
+            <p>p₂: <span class="formel">y = x² + 2x - 4 = (x + 1)² - 1 - 4 = (x + 1)² - 5</span> → kein Match</p>
+            <p>p₃: <span class="formel">y = x² + 4x + 1 = (x + 2)² - 4 + 1 = (x + 2)² - 3</span> → passt zu t</p>
+            <p>p₄: <span class="formel">y = x² - 4x + 1 = (x - 2)² - 4 + 1 = (x - 2)² - 3</span> → kein Match</p>
+            <p><b>Zuordnung:</b> p₁ → s, p₃ → t (andere haben keine direkte Entsprechung).</p>
+        </div>
+    </div>
+
+</body>
+</html>
