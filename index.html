@@ -4,281 +4,1469 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mathematik-Prüfung mit Lösungen</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            line-height: 1.8;
-            margin: 0;
-            padding: 40px;
-            background: linear-gradient(135deg, #f0f4f8 0%, #e6ecef 100%);
-            color: #2d3748;
+        :root {
+            --primary-color: #5D5CDE;
+            --secondary-color: #4B4AAA;
+            --light-bg: #FFFFFF;
+            --dark-bg: #181818;
+            --light-text: #333333;
+            --dark-text: #F0F0F0;
         }
-        h1 {
-            text-align: center;
-            color: #2b6cb0;
-            font-size: 2.2em;
-            margin-bottom: 30px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: var(--dark-bg);
+                color: var(--dark-text);
+            }
+            .bg-white {
+                background-color: #222 !important;
+            }
+            .text-gray-800 {
+                color: #f0f0f0 !important;
+            }
+            .text-gray-700 {
+                color: #e0e0e0 !important;
+            }
+            .text-gray-600 {
+                color: #d0d0d0 !important;
+            }
+            .text-gray-500 {
+                color: #c0c0c0 !important;
+            }
+            .border-gray-200 {
+                border-color: #444 !important;
+            }
+            .solution-container {
+                background-color: #2a2a2a !important;
+                border-color: #444 !important;
+            }
+            .grid-cols-2 > div {
+                background-color: #2a2a2a !important;
+                border-color: #444 !important;
+            }
+            .exercise-tab {
+                background-color: #333 !important;
+                color: #f0f0f0 !important;
+            }
+            .exercise-tab.active {
+                background-color: var(--primary-color) !important;
+                color: white !important;
+            }
+            .solution-toggle {
+                background-color: var(--primary-color);
+                color: white;
+            }
+            input, select {
+                background-color: #333 !important;
+                color: #f0f0f0 !important;
+                border-color: #555 !important;
+            }
         }
-        h2 {
-            color: #2b6cb0;
-            font-size: 1.8em;
-            margin-top: 40px;
-            padding: 10px 15px;
-            background: #e2e8f0;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+        .solution-container {
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            padding-top: 0;
+            padding-bottom: 0;
         }
-        h3 {
-            color: #3182ce;
-            font-size: 1.4em;
-            margin-top: 20px;
+
+        .solution-container.show {
+            max-height: 2000px;
+            opacity: 1;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
         }
-        p {
-            margin-bottom: 15px;
-            font-size: 1.1em;
+
+        .exercise-tab {
+            transition: background-color 0.3s, color 0.3s;
         }
-        ol, ul {
-            margin-left: 25px;
-            margin-bottom: 20px;
-            padding-left: 15px;
+
+        .step-solution {
+            transition: transform 0.2s, opacity 0.2s;
         }
-        li {
-            margin-bottom: 12px;
-            padding-left: 10px;
+
+        .step-solution:hover {
+            transform: scale(1.01);
+        }
+
+        .chart-container {
             position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            height: 300px;
         }
-        li:before {
-            content: "•";
-            color: #4a90e2;
-            font-size: 1.2em;
-            position: absolute;
-            left: -10px;
+
+        .solution-toggle {
+            transition: background-color 0.3s, transform 0.2s;
         }
-        .teil {
-            background: #fff;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 40px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease;
+
+        .solution-toggle:hover {
+            transform: scale(1.05);
         }
-        .teil:hover {
-            transform: translateY(-5px);
+
+        .exercise-content {
+            display: none;
         }
-        .formel {
-            font-style: italic;
-            font-weight: bold;
-            color: #2c5282;
-            background: #e6fffa;
-            padding: 2px 6px;
-            border-radius: 4px;
+
+        .exercise-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
         }
-        .lösung {
-            background: #f7fafc;
-            padding: 15px;
-            border-left: 4px solid #4a90e2;
-            margin-top: 10px;
-            border-radius: 6px;
-        }
-        .graph {
-            background: #edf2f7;
-            padding: 15px;
-            margin-top: 10px;
-            border-radius: 6px;
-            font-family: monospace;
-        }
-        b {
-            color: #2b6cb0;
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen bg-gray-50 py-6 flex flex-col justify-center sm:py-12">
+    <div class="relative py-3 sm:max-w-4xl sm:mx-auto">
+        <div class="relative px-4 py-8 bg-white shadow-lg sm:rounded-3xl sm:p-8">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">Mathematik-Prüfung mit Lösungen</h1>
+                    <p class="text-gray-600 mb-8">Interaktive Lernplattform für algebraische Konzepte</p>
+                </div>
 
-    <h1>Mathematik-Prüfung mit Lösungen</h1>
+                <!-- Navigation Tabs -->
+                <div class="flex flex-wrap mb-6 border-b border-gray-200">
+                    <button class="exercise-tab py-2 px-4 rounded-t-lg text-gray-700 font-medium active" data-exercise="1">
+                        📏 Aufgabe 1: Lineare Gleichungen
+                    </button>
+                    <button class="exercise-tab py-2 px-4 rounded-t-lg text-gray-700 font-medium" data-exercise="2">
+                        📈 Aufgabe 2: Nullstellen
+                    </button>
+                    <button class="exercise-tab py-2 px-4 rounded-t-lg text-gray-700 font-medium" data-exercise="3">
+                        🔍 Aufgabe 3: Streckung/Stauchung
+                    </button>
+                    <button class="exercise-tab py-2 px-4 rounded-t-lg text-gray-700 font-medium" data-exercise="4">
+                        📍 Aufgabe 4: Scheitelpunkte
+                    </button>
+                    <button class="exercise-tab py-2 px-4 rounded-t-lg text-gray-700 font-medium" data-exercise="5">
+                        🔗 Aufgabe 5: Zuordnungen
+                    </button>
+                </div>
 
-    <div class="teil">
-        <h2>📏 Aufgabe 1: Lineare Gleichungssysteme (10 Punkte)</h2>
-        <ol>
-            <li>Stelle die folgenden Gleichungen in die Form <span class="formel">y = mx + b</span> um:
-                <ol>
-                    <li>a) <span class="formel">2y - 2x = 2</span></li>
-                    <li>b) <span class="formel">y + 1 = 3x</span></li>
-                    <li>c) <span class="formel">3y - 2x = 2</span></li>
-                    <li>d) <span class="formel">4y - 4x = 4</span></li>
-                </ol>
-                <div class="lösung">
-                    <p><b>Lösung:</b></p>
-                    <p>a) <span class="formel">2y - 2x = 2</span></p>
-                    <p>→ <span class="formel">2y = 2x + 2</span> (addiere 2x auf beiden Seiten)</p>
-                    <p>→ <span class="formel">y = x + 1</span> (dividiere durch 2)</p>
-                    <p>b) <span class="formel">y + 1 = 3x</span></p>
-                    <p>→ <span class="formel">y = 3x - 1</span> (subtrahiere 1 auf beiden Seiten)</p>
-                    <p>c) <span class="formel">3y - 2x = 2</span></p>
-                    <p>→ <span class="formel">3y = 2x + 2</span> (addiere 2x)</p>
-                    <p>→ <span class="formel">y = (2/3)x + 2/3</span> (dividiere durch 3)</p>
-                    <p>d) <span class="formel">4y - 4x = 4</span></p>
-                    <p>→ <span class="formel">4y = 4x + 4</span> (addiere 4x)</p>
-                    <p>→ <span class="formel">y = x + 1</span> (dividiere durch 4)</p>
-                </div>
-            </li>
-            <li>Berechne die Anzahl der gemeinsamen Punkte der Geraden aus Teilaufgabe 1.
-                <div class="lösung">
-                    <p><b>Lösung:</b></p>
-                    <p>Geraden: a) <span class="formel">y = x + 1</span>, b) <span class="formel">y = 3x - 1</span>, c) <span class="formel">y = (2/3)x + 2/3</span>, d) <span class="formel">y = x + 1</span></p>
-                    <p>- a) und d) sind identisch (gleiche Steigung m = 1, gleicher y-Achsenabschnitt b = 1) → unendlich viele gemeinsame Punkte.</p>
-                    <p>- Vergleiche a) mit b): <span class="formel">x + 1 = 3x - 1</span></p>
-                    <p>→ <span class="formel">2 = 2x</span> → <span class="formel">x = 1</span>, <span class="formel">y = 2</span> (ein Schnittpunkt: (1|2))</p>
-                    <p>- Vergleiche a) mit c): <span class="formel">x + 1 = (2/3)x + 2/3</span></p>
-                    <p>→ <span class="formel">x - (2/3)x = 2/3 - 1</span> → <span class="formel">(1/3)x = -1/3</span> → <span class="formel">x = -1</span>, <span class="formel">y = 0</span> (ein Schnittpunkt: (-1|0))</p>
-                    <p><b>Ergebnis:</b> a) und d) haben unendlich viele Punkte, mit b) und c) je einen Schnittpunkt.</p>
-                </div>
-            </li>
-            <li>Löse das Lineare Gleichungssystem rechnerisch und bestimme die Lösungsmenge.
-                <div class="lösung">
-                    <p><b>Lösung (z. B. a) und b)):</b></p>
-                    <p><span class="formel">y = x + 1</span></p>
-                    <p><span class="formel">y = 3x - 1</span></p>
-                    <p>Gleichsetzen: <span class="formel">x + 1 = 3x - 1</span></p>
-                    <p>→ <span class="formel">2 = 2x</span> → <span class="formel">x = 1</span></p>
-                    <p>Einsetzen: <span class="formel">y = 1 + 1 = 2</span></p>
-                    <p><b>Lösungsmenge:</b> {(1|2)}</p>
-                </div>
-            </li>
-        </ol>
-    </div>
+                <!-- Aufgabe 1: Lineare Gleichungssysteme -->
+                <div id="exercise1" class="exercise-content active">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Aufgabe 1: Lineare Gleichungssysteme (10 Punkte)</h2>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">Stelle die folgenden Gleichungen in die Form <span class="font-semibold">y = mx + b</span> um:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">a) 2y - 2x = 2</p>
+                                <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                        data-target="solution1a">Lösung anzeigen</button>
+                                <div id="solution1a" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <div class="step-solution mb-2">
+                                        <p>2y - 2x = 2</p>
+                                    </div>
+                                    <div class="step-solution mb-2">
+                                        <p>→ 2y = 2x + 2 <span class="text-gray-500">(addiere 2x auf beiden Seiten)</span></p>
+                                    </div>
+                                    <div class="step-solution">
+                                        <p>→ y = x + 1 <span class="text-gray-500">(dividiere durch 2)</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">b) y + 1 = 3x</p>
+                                <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                        data-target="solution1b">Lösung anzeigen</button>
+                                <div id="solution1b" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <div class="step-solution mb-2">
+                                        <p>y + 1 = 3x</p>
+                                    </div>
+                                    <div class="step-solution">
+                                        <p>→ y = 3x - 1 <span class="text-gray-500">(subtrahiere 1 auf beiden Seiten)</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">c) 3y - 2x = 2</p>
+                                <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                        data-target="solution1c">Lösung anzeigen</button>
+                                <div id="solution1c" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <div class="step-solution mb-2">
+                                        <p>3y - 2x = 2</p>
+                                    </div>
+                                    <div class="step-solution mb-2">
+                                        <p>→ 3y = 2x + 2 <span class="text-gray-500">(addiere 2x)</span></p>
+                                    </div>
+                                    <div class="step-solution">
+                                        <p>→ y = (2/3)x + 2/3 <span class="text-gray-500">(dividiere durch 3)</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">d) 4y - 4x = 4</p>
+                                <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                        data-target="solution1d">Lösung anzeigen</button>
+                                <div id="solution1d" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <div class="step-solution mb-2">
+                                        <p>4y - 4x = 4</p>
+                                    </div>
+                                    <div class="step-solution mb-2">
+                                        <p>→ 4y = 4x + 4 <span class="text-gray-500">(addiere 4x)</span></p>
+                                    </div>
+                                    <div class="step-solution">
+                                        <p>→ y = x + 1 <span class="text-gray-500">(dividiere durch 4)</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <div class="teil">
-        <h2>📈 Aufgabe 2: Nullstellen von Parabeln (10 Punkte)</h2>
-        <p>Gegeben sind die Funktionen:</p>
-        <ul>
-            <li><b>Parabel 1:</b> <span class="formel">y = x² + 2x</span></li>
-            <li><b>Parabel 2:</b> <span class="formel">y = x² + 2x - 1</span></li>
-            <li><b>Parabel 3:</b> <span class="formel">y = x² + 2x + 2</span></li>
-        </ul>
-        <ol>
-            <li>Berechne die Nullstellen jeder Parabel mit der Mitternachtsformel.
-                <div class="lösung">
-                    <p><b>Mitternachtsformel:</b> <span class="formel">x = [-b ± √(b² - 4ac)] / (2a)</span></p>
-                    <p>1) <span class="formel">y = x² + 2x</span> (a = 1, b = 2, c = 0)</p>
-                    <p>→ <span class="formel">D = 2² - 4·1·0 = 4</span></p>
-                    <p>→ <span class="formel">x = [-2 ± √4] / 2 = [-2 ± 2] / 2</span></p>
-                    <p>→ <span class="formel">x₁ = 0, x₂ = -2</span></p>
-                    <p>2) <span class="formel">y = x² + 2x - 1</span> (a = 1, b = 2, c = -1)</p>
-                    <p>→ <span class="formel">D = 2² - 4·1·(-1) = 4 + 4 = 8</span></p>
-                    <p>→ <span class="formel">x = [-2 ± √8] / 2 = [-2 ± 2√2] / 2 = -1 ± √2</span></p>
-                    <p>→ <span class="formel">x₁ ≈ -2.414, x₂ ≈ 0.414</span></p>
-                    <p>3) <span class="formel">y = x² + 2x + 2</span> (a = 1, b = 2, c = 2)</p>
-                    <p>→ <span class="formel">D = 2² - 4·1·2 = 4 - 8 = -4</span></p>
-                    <p>→ <span class="formel">D < 0</span> → keine reellen Nullstellen</p>
-                </div>
-            </li>
-            <li>Vergleiche die Diskriminante <span class="formel">D = b² - 4ac</span> mit Null und erkläre die Bedeutung des Ergebnisses.
-                <div class="lösung">
-                    <p><b>Lösung:</b></p>
-                    <p>1) <span class="formel">D = 4 > 0</span> → 2 reelle Nullstellen</p>
-                    <p>2) <span class="formel">D = 8 > 0</span> → 2 reelle Nullstellen</p>
-                    <p>3) <span class="formel">D = -4 < 0</span> → keine reellen Nullstellen (Parabel liegt über der x-Achse)</p>
-                </div>
-            </li>
-            <li>Zeichne die Graphen der Parabeln in ein Koordinatensystem.
-                <div class="graph">
-                    <p><b>Wertetabelle für Parabel 1 (y = x² + 2x):</b></p>
-                    <p>x: -3 → y = 9 + (-6) = 3 | (-3|3)</p>
-                    <p>x: -2 → y = 4 + (-4) = 0 | (-2|0)</p>
-                    <p>x: 0 → y = 0 + 0 = 0 | (0|0)</p>
-                    <p><b>Scheitelpunkt:</b> x = -b/(2a) = -2/2 = -1 → y = 1 - 2 = -1 | (-1|-1)</p>
-                    <p><b>Beschreibung:</b> Öffnet nach oben, Nullstellen bei -2 und 0, Scheitel bei (-1|-1).</p>
-                    <p>(Ähnlich für die anderen Parabeln – zeichne sie mit diesen Punkten in ein Koordinatensystem!)</p>
-                </div>
-            </li>
-        </ol>
-    </div>
+                    <div class="mb-6">
+                        <p class="mb-4">Berechne die Anzahl der gemeinsamen Punkte der Geraden aus Teilaufgabe 1.</p>
+                        <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                data-target="solution1points">Lösung anzeigen</button>
+                        <div id="solution1points" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <p class="font-semibold mb-2">Geraden:</p>
+                            <ul class="list-disc pl-6 mb-4">
+                                <li>a) y = x + 1</li>
+                                <li>b) y = 3x - 1</li>
+                                <li>c) y = (2/3)x + 2/3</li>
+                                <li>d) y = x + 1</li>
+                            </ul>
+                            <div class="mb-4">
+                                <p>a) und d) sind identisch (gleiche Steigung m = 1, gleicher y-Achsenabschnitt b = 1) → unendlich viele gemeinsame Punkte.</p>
+                            </div>
+                            <div class="mb-4">
+                                <p class="font-semibold">Vergleiche a) mit b):</p>
+                                <p>x + 1 = 3x - 1</p>
+                                <p>→ 2 = 2x</p>
+                                <p>→ x = 1, y = 2</p>
+                                <p>Ein Schnittpunkt: (1|2)</p>
+                            </div>
+                            <div class="mb-4">
+                                <p class="font-semibold">Vergleiche a) mit c):</p>
+                                <p>x + 1 = (2/3)x + 2/3</p>
+                                <p>→ x - (2/3)x = 2/3 - 1</p>
+                                <p>→ (1/3)x = -1/3</p>
+                                <p>→ x = -1, y = 0</p>
+                                <p>Ein Schnittpunkt: (-1|0)</p>
+                            </div>
+                            <div class="mt-4 font-semibold">
+                                <p>Ergebnis: a) und d) haben unendlich viele Punkte, mit b) und c) je einen Schnittpunkt.</p>
+                            </div>
+                        </div>
+                    </div>
 
-    <div class="teil">
-        <h2>🔍 Aufgabe 3: Streckung und Stauchung in y-Richtung (10 Punkte)</h2>
-        <p>Erstelle eine Wertetabelle für <span class="formel">-4 ≤ x ≤ 4</span> und zeichne die Parabeln.</p>
-        <ol>
-            <li><span class="formel">p₁: y = ½x²</span></li>
-            <li><span class="formel">p₂: y = -½x²</span></li>
-        </ol>
-        <div class="lösung">
-            <p><b>Wertetabelle p₁:</b></p>
-            <p>x = -4 → y = ½·16 = 8 | x = -2 → y = 2 | x = 0 → y = 0 | x = 2 → y = 2 | x = 4 → y = 8</p>
-            <p><b>Wertetabelle p₂:</b></p>
-            <p>x = -4 → y = -½·16 = -8 | x = -2 → y = -2 | x = 0 → y = 0 | x = 2 → y = -2 | x = 4 → y = -8</p>
+                    <div class="mt-8">
+                        <p>Löse das Lineare Gleichungssystem rechnerisch und bestimme die Lösungsmenge.</p>
+                        <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm mt-2" 
+                                data-target="solution1system">Lösung anzeigen</button>
+                        <div id="solution1system" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <p class="font-semibold mb-2">Lösung (z. B. a) und b))</p>
+                            <p>y = x + 1</p>
+                            <p>y = 3x - 1</p>
+                            <p class="mt-2">Gleichsetzen:</p>
+                            <p>x + 1 = 3x - 1</p>
+                            <p>→ 2 = 2x</p>
+                            <p>→ x = 1</p>
+                            <p class="mt-2">Einsetzen:</p>
+                            <p>y = 1 + 1 = 2</p>
+                            <p class="mt-2 font-semibold">Lösungsmenge: {(1|2)}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <div class="chart-container">
+                            <canvas id="linearChart"></canvas>
+                        </div>
+                        <div class="flex justify-center mt-4">
+                            <div class="mr-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Gerade 1</label>
+                                <select id="line1Selector" class="rounded-md border border-gray-300 shadow-sm px-3 py-2">
+                                    <option value="a">a) y = x + 1</option>
+                                    <option value="b">b) y = 3x - 1</option>
+                                    <option value="c">c) y = (2/3)x + 2/3</option>
+                                    <option value="d">d) y = x + 1</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Gerade 2</label>
+                                <select id="line2Selector" class="rounded-md border border-gray-300 shadow-sm px-3 py-2">
+                                    <option value="a">a) y = x + 1</option>
+                                    <option value="b" selected>b) y = 3x - 1</option>
+                                    <option value="c">c) y = (2/3)x + 2/3</option>
+                                    <option value="d">d) y = x + 1</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aufgabe 2: Nullstellen von Parabeln -->
+                <div id="exercise2" class="exercise-content">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Aufgabe 2: Nullstellen von Parabeln (10 Punkte)</h2>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">Gegeben sind die Funktionen:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">Parabel 1: y = x² + 2x</p>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">Parabel 2: y = x² + 2x - 1</p>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">Parabel 3: y = x² + 2x + 2</p>
+                            </div>
+                        </div>
+                        
+                        <p class="mb-4">Berechne die Nullstellen jeder Parabel mit der Mitternachtsformel.</p>
+                        <div class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <p class="font-semibold">Mitternachtsformel: x = [-b ± √(b² - 4ac)] / (2a)</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">Parabel 1: y = x² + 2x</p>
+                                <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                        data-target="solution2a">Lösung anzeigen</button>
+                                <div id="solution2a" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <p>y = x² + 2x (a = 1, b = 2, c = 0)</p>
+                                    <p class="mt-2">→ D = 2² - 4·1·0 = 4</p>
+                                    <p>→ x = [-2 ± √4] / 2 = [-2 ± 2] / 2</p>
+                                    <p class="font-semibold mt-2">→ x₁ = 0, x₂ = -2</p>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">Parabel 2: y = x² + 2x - 1</p>
+                                <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                        data-target="solution2b">Lösung anzeigen</button>
+                                <div id="solution2b" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <p>y = x² + 2x - 1 (a = 1, b = 2, c = -1)</p>
+                                    <p class="mt-2">→ D = 2² - 4·1·(-1) = 4 + 4 = 8</p>
+                                    <p>→ x = [-2 ± √8] / 2 = [-2 ± 2√2] / 2 = -1 ± √2</p>
+                                    <p class="font-semibold mt-2">→ x₁ ≈ -2.414, x₂ ≈ 0.414</p>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">Parabel 3: y = x² + 2x + 2</p>
+                                <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                        data-target="solution2c">Lösung anzeigen</button>
+                                <div id="solution2c" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <p>y = x² + 2x + 2 (a = 1, b = 2, c = 2)</p>
+                                    <p class="mt-2">→ D = 2² - 4·1·2 = 4 - 8 = -4</p>
+                                    <p>→ D < 0</p>
+                                    <p class="font-semibold mt-2">→ keine reellen Nullstellen</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">Vergleiche die Diskriminante D = b² - 4ac mit Null und erkläre die Bedeutung des Ergebnisses.</p>
+                        <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                data-target="solution2discriminant">Lösung anzeigen</button>
+                        <div id="solution2discriminant" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <div class="mb-2">
+                                <p class="font-semibold">1) D = 4 > 0</p>
+                                <p>→ 2 reelle Nullstellen</p>
+                            </div>
+                            <div class="mb-2">
+                                <p class="font-semibold">2) D = 8 > 0</p>
+                                <p>→ 2 reelle Nullstellen</p>
+                            </div>
+                            <div class="mb-2">
+                                <p class="font-semibold">3) D = -4 < 0</p>
+                                <p>→ keine reellen Nullstellen (Parabel liegt über der x-Achse)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="mb-4">Zeichne die Graphen der Parabeln in ein Koordinatensystem.</p>
+                    <div class="chart-container">
+                        <canvas id="parabolaChart"></canvas>
+                    </div>
+                    <div class="flex justify-center mt-4">
+                        <div class="mr-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Parabel anzeigen:</label>
+                            <div class="flex flex-wrap gap-2">
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="parabola-checkbox" data-index="0" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                    <span class="ml-2">Parabel 1</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="parabola-checkbox" data-index="1" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                    <span class="ml-2">Parabel 2</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="parabola-checkbox" data-index="2" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                    <span class="ml-2">Parabel 3</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Aufgabe 3: Streckung und Stauchung -->
+                <div id="exercise3" class="exercise-content">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Aufgabe 3: Streckung und Stauchung in y-Richtung (10 Punkte)</h2>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">Erstelle eine Wertetabelle für -4 ≤ x ≤ 4 und zeichne die Parabeln.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">p₁: y = ½x²</p>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">p₂: y = -½x²</p>
+                            </div>
+                        </div>
+                        
+                        <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                data-target="solution3table">Wertetabellen anzeigen</button>
+                        <div id="solution3table" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead>
+                                        <tr>
+                                            <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">x</th>
+                                            <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">-4</th>
+                                            <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">-2</th>
+                                            <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">0</th>
+                                            <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">2</th>
+                                            <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">4</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">p₁: y = ½x²</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">8</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">0</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">8</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">p₂: y = -½x²</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-8</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-2</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">0</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-2</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-8</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-4">
+                                <p><strong>Beschreibung:</strong></p>
+                                <p>p₁ öffnet nach oben, gestaucht (flacher als y = x²)</p>
+                                <p>p₂ öffnet nach unten, ebenfalls gestaucht</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="stretchSqueezePrabola"></canvas>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <p class="font-semibold mb-4">Zusatzfrage: Wie verändert sich die Form der Parabel, wenn der Faktor vor x² größer oder kleiner wird?</p>
+                        <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                data-target="solution3extra">Lösung anzeigen</button>
+                        <div id="solution3extra" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <p>Ein größerer Faktor (z. B. 2) macht die Parabel steiler, ein kleinerer (z. B. ½) flacher. Negativer Faktor spiegelt sie an der x-Achse.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <div class="mb-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Faktor a für y = a·x²:</label>
+                            <input type="range" id="parabolaFactor" min="-2" max="2" step="0.1" value="0.5" class="w-full">
+                        </div>
+                        <p id="factorValue" class="text-center mb-4">a = 0.5</p>
+                    </div>
+                </div>
+                
+                <!-- Aufgabe 4: Scheitelpunkt einer Parabel und Parabelgleichungen -->
+                <div id="exercise4" class="exercise-content">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Aufgabe 4: Scheitelpunkt einer Parabel und Parabelgleichungen (10 Punkte)</h2>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">Bestimme den Scheitelpunkt der folgenden Parabeln durch quadratische Ergänzung:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">a) y = x² + 8x + 17</p>
+                                <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                        data-target="solution4a">Lösung anzeigen</button>
+                                <div id="solution4a" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <p>y = x² + 8x + 17</p>
+                                    <p>→ y = (x² + 8x + 16) + 17 - 16</p>
+                                    <p><span class="text-gray-500">(Ergänzung: (8/2)² = 16)</span></p>
+                                    <p>→ y = (x + 4)² + 1</p>
+                                    <p class="font-semibold mt-2">→ Scheitelpunkt: (-4|1)</p>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">b) y = x² - 20x + 50</p>
+                                <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                        data-target="solution4b">Lösung anzeigen</button>
+                                <div id="solution4b" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <p>y = x² - 20x + 50</p>
+                                    <p>→ y = (x² - 20x + 100) + 50 - 100</p>
+                                    <p><span class="text-gray-500">(Ergänzung: (-20/2)² = 100)</span></p>
+                                    <p>→ y = (x - 10)² - 50</p>
+                                    <p class="font-semibold mt-2">→ Scheitelpunkt: (10|-50)</p>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">c) y = x² - 7x</p>
+                                <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                        data-target="solution4c">Lösung anzeigen</button>
+                                <div id="solution4c" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <p>y = x² - 7x</p>
+                                    <p>→ y = (x² - 7x + 12.25) - 12.25</p>
+                                    <p><span class="text-gray-500">(Ergänzung: (-7/2)² = 12.25)</span></p>
+                                    <p>→ y = (x - 3.5)² - 12.25</p>
+                                    <p class="font-semibold mt-2">→ Scheitelpunkt: (3.5|-12.25)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="vertexParabolaChart"></canvas>
+                    </div>
+                    <div class="flex justify-center mt-4">
+                        <div class="mr-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Parabeln anzeigen:</label>
+                            <div class="flex flex-wrap gap-2">
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="vertex-parabola-checkbox" data-index="0" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                    <span class="ml-2">a) y = x² + 8x + 17</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="vertex-parabola-checkbox" data-index="1" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                    <span class="ml-2">b) y = x² - 20x + 50</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="vertex-parabola-checkbox" data-index="2" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                    <span class="ml-2">c) y = x² - 7x</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <p class="mb-4">Bestimme die allgemeine Parabelgleichung der Form y = x² + bx + c, wenn der Scheitelpunkt gegeben ist:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">a) S(-2 | 1)</p>
+                                <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                        data-target="solution4vertex1">Lösung anzeigen</button>
+                                <div id="solution4vertex1" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <p>Scheitelpunktform: y = a(x - h)² + k, hier a = 1</p>
+                                    <p>S(-2|1) → y = (x + 2)² + 1</p>
+                                    <p>= x² + 4x + 4 + 1</p>
+                                    <p class="font-semibold">= x² + 4x + 5</p>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">b) S(-3 | -5)</p>
+                                <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                        data-target="solution4vertex2">Lösung anzeigen</button>
+                                <div id="solution4vertex2" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <p>S(-3|-5) → y = (x + 3)² - 5</p>
+                                    <p>= x² + 6x + 9 - 5</p>
+                                    <p class="font-semibold">= x² + 6x + 4</p>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold mb-2">c) S(4 | -5)</p>
+                                <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                        data-target="solution4vertex3">Lösung anzeigen</button>
+                                <div id="solution4vertex3" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <p>S(4|-5) → y = (x - 4)² - 5</p>
+                                    <p>= x² - 8x + 16 - 5</p>
+                                    <p class="font-semibold">= x² - 8x + 11</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Aufgabe 5: Zuordnung von Parabelgleichungen -->
+                <div id="exercise5" class="exercise-content">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Aufgabe 5: Zuordnung von Parabelgleichungen (10 Punkte)</h2>
+                    
+                    <div class="mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+                            <div>
+                                <p class="font-semibold mb-2">Allgemeine Form:</p>
+                                <ul class="list-disc pl-6 space-y-2">
+                                    <li>p₁: y = x² - 2x - 4</li>
+                                    <li>p₂: y = x² + 2x - 4</li>
+                                    <li>p₃: y = x² + 4x + 1</li>
+                                    <li>p₄: y = x² - 4x + 1</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="font-semibold mb-2">Scheitelpunktform:</p>
+                                <ul class="list-disc pl-6 space-y-2">
+                                    <li>q: y = (x - 2)² + 4</li>
+                                    <li>r: y = (x + 2)² + 3</li>
+                                    <li>s: y = (x - 1)² - 5</li>
+                                    <li>t: y = (x + 2)² - 3</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <button class="solution-toggle bg-primary text-white px-4 py-2 rounded-lg text-sm" 
+                                data-target="solution5">Lösung anzeigen</button>
+                        <div id="solution5" class="solution-container mt-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <div class="mb-4">
+                                <p class="font-semibold">p₁: y = x² - 2x - 4</p>
+                                <p>= (x - 1)² - 1 - 4 = (x - 1)² - 5</p>
+                                <p>→ passt zu s</p>
+                            </div>
+                            <div class="mb-4">
+                                <p class="font-semibold">p₂: y = x² + 2x - 4</p>
+                                <p>= (x + 1)² - 1 - 4 = (x + 1)² - 5</p>
+                                <p>→ kein Match</p>
+                            </div>
+                            <div class="mb-4">
+                                <p class="font-semibold">p₃: y = x² + 4x + 1</p>
+                                <p>= (x + 2)² - 4 + 1 = (x + 2)² - 3</p>
+                                <p>→ passt zu t</p>
+                            </div>
+                            <div class="mb-4">
+                                <p class="font-semibold">p₄: y = x² - 4x + 1</p>
+                                <p>= (x - 2)² - 4 + 1 = (x - 2)² - 3</p>
+                                <p>→ kein Match</p>
+                            </div>
+                            <div class="mt-4 font-semibold">
+                                <p>Zuordnung: p₁ → s, p₃ → t (andere haben keine direkte Entsprechung)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Interaktives Zuordnungsspiel</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <p class="font-semibold mb-2">Allgemeine Form:</p>
+                                <div class="space-y-2">
+                                    <div class="drag-item border border-gray-300 p-2 rounded-lg bg-white" draggable="true" data-id="p1">p₁: y = x² - 2x - 4</div>
+                                    <div class="drag-item border border-gray-300 p-2 rounded-lg bg-white" draggable="true" data-id="p2">p₂: y = x² + 2x - 4</div>
+                                    <div class="drag-item border border-gray-300 p-2 rounded-lg bg-white" draggable="true" data-id="p3">p₃: y = x² + 4x + 1</div>
+                                    <div class="drag-item border border-gray-300 p-2 rounded-lg bg-white" draggable="true" data-id="p4">p₄: y = x² - 4x + 1</div>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="font-semibold mb-2">Scheitelpunktform:</p>
+                                <div class="space-y-2">
+                                    <div class="drop-zone border-2 border-dashed border-gray-300 p-2 rounded-lg min-h-16 bg-gray-50" data-correct="none">
+                                        <p>q: y = (x - 2)² + 4</p>
+                                    </div>
+                                    <div class="drop-zone border-2 border-dashed border-gray-300 p-2 rounded-lg min-h-16 bg-gray-50" data-correct="none">
+                                        <p>r: y = (x + 2)² + 3</p>
+                                    </div>
+                                    <div class="drop-zone border-2 border-dashed border-gray-300 p-2 rounded-lg min-h-16 bg-gray-50" data-correct="p1">
+                                        <p>s: y = (x - 1)² - 5</p>
+                                    </div>
+                                    <div class="drop-zone border-2 border-dashed border-gray-300 p-2 rounded-lg min-h-16 bg-gray-50" data-correct="p3">
+                                        <p>t: y = (x + 2)² - 3</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <button id="checkMatchesBtn" class="bg-primary text-white px-6 py-2 rounded-lg">Überprüfen</button>
+                            <button id="resetMatchesBtn" class="bg-gray-500 text-white px-6 py-2 rounded-lg ml-4">Zurücksetzen</button>
+                        </div>
+                        <p id="matchFeedback" class="mt-4 text-center font-semibold hidden"></p>
+                    </div>
+                </div>
+                
+                <!-- Navigation buttons -->
+                <div class="mt-8 flex justify-between">
+                    <button id="prevExercise" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors">Vorherige Aufgabe</button>
+                    <button id="nextExercise" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-secondary transition-colors">Nächste Aufgabe</button>
+                </div>
+            </div>
         </div>
-        <div class="graph">
-            <p><b>Beschreibung:</b> p₁ öffnet nach oben, gestaucht (flacher als y = x²), p₂ öffnet nach unten, ebenfalls gestaucht.</p>
-        </div>
-        <p class="hinweis"><b>Zusatzfrage:</b> Wie verändert sich die Form der Parabel, wenn der Faktor vor <span class="formel">x²</span> größer oder kleiner wird?</p>
-        <div class="lösung">
-            <p><b>Lösung:</b> Ein größerer Faktor (z. B. 2) macht die Parabel steiler, ein kleinerer (z. B. ½) flacher. Negativer Faktor spiegelt sie an der x-Achse.</p>
-        </div>
     </div>
 
-    <div class="teil">
-        <h2>📍 Aufgabe 4: Scheitelpunkt einer Parabel und Parabelgleichungen (10 Punkte)</h2>
-        <ol>
-            <li>Bestimme den Scheitelpunkt der folgenden Parabeln durch quadratische Ergänzung:
-                <ol>
-                    <li>a) <span class="formel">y = x² + 8x + 17</span></li>
-                    <li>b) <span class="formel">y = x² - 20x + 50</span></li>
-                    <li>c) <span class="formel">y = x² - 7x</span></li>
-                </ol>
-                <div class="lösung">
-                    <p>a) <span class="formel">y = x² + 8x + 17</span></p>
-                    <p>→ <span class="formel">y = (x² + 8x + 16) + 17 - 16</span> (Ergänzung: (8/2)² = 16)</p>
-                    <p>→ <span class="formel">y = (x + 4)² + 1</span> → Scheitelpunkt: (-4|1)</p>
-                    <p>b) <span class="formel">y = x² - 20x + 50</span></p>
-                    <p>→ <span class="formel">y = (x² - 20x + 100) + 50 - 100</span> (Ergänzung: (-20/2)² = 100)</p>
-                    <p>→ <span class="formel">y = (x - 10)² - 50</span> → Scheitelpunkt: (10|-50)</p>
-                    <p>c) <span class="formel">y = x² - 7x</span></p>
-                    <p>→ <span class="formel">y = (x² - 7x + 12.25) - 12.25</span> (Ergänzung: (-7/2)² = 12.25)</p>
-                    <p>→ <span class="formel">y = (x - 3.5)² - 12.25</span> → Scheitelpunkt: (3.5|-12.25)</p>
-                </div>
-            </li>
-            <li>Bestimme die allgemeine Parabelgleichung der Form <span class="formel">y = x² + bx + c</span>, wenn der Scheitelpunkt gegeben ist:
-                <ol>
-                    <li>a) <span class="formel">S(-2 | 1)</span></li>
-                    <li>b) <span class="formel">S(-3 | -5)</span></li>
-                    <li>c) <span class="formel">S(4 | -5)</span></li>
-                </ol>
-                <div class="lösung">
-                    <p>Scheitelpunktform: <span class="formel">y = a(x - h)² + k</span>, hier a = 1</p>
-                    <p>a) S(-2|1) → <span class="formel">y = (x + 2)² + 1 = x² + 4x + 4 + 1 = x² + 4x + 5</span></p>
-                    <p>b) S(-3|-5) → <span class="formel">y = (x + 3)² - 5 = x² + 6x + 9 - 5 = x² + 6x + 4</span></p>
-                    <p>c) S(4|-5) → <span class="formel">y = (x - 4)² - 5 = x² - 8x + 16 - 5 = x² - 8x + 11</span></p>
-                </div>
-            </li>
-        </ol>
-    </div>
+    <script>
+        // Set up primary color from CSS
+        document.querySelectorAll('.bg-primary').forEach(el => {
+            el.style.backgroundColor = '#5D5CDE';
+        });
+        document.querySelectorAll('.hover\\:bg-secondary').forEach(el => {
+            el.addEventListener('mouseover', () => {
+                el.style.backgroundColor = '#4B4AAA';
+            });
+            el.addEventListener('mouseout', () => {
+                el.style.backgroundColor = '#5D5CDE';
+            });
+        });
 
-    <div class="teil">
-        <h2>🔗 Aufgabe 5: Zuordnung von Parabelgleichungen (10 Punkte)</h2>
-        <p><b>Allgemeine Form:</b></p>
-        <ol>
-            <li><span class="formel">p₁: y = x² - 2x - 4</span></li>
-            <li><span class="formel">p₂: y = x² + 2x - 4</span></li>
-            <li><span class="formel">p₃: y = x² + 4x + 1</span></li>
-            <li><span class="formel">p₄: y = x² - 4x + 1</span></li>
-        </ol>
-        <p><b>Scheitelpunktform:</b></p>
-        <ol>
-            <li><span class="formel">q: y = (x - 2)² + 4</span></li>
-            <li><span class="formel">r: y = (x + 2)² + 3</span></li>
-            <li><span class="formel">s: y = (x - 1)² - 5</span></li>
-            <li><span class="formel">t: y = (x + 2)² - 3</span></li>
-        </ol>
-        <div class="lösung">
-            <p><b>Lösung:</b></p>
-            <p>p₁: <span class="formel">y = x² - 2x - 4 = (x - 1)² - 1 - 4 = (x - 1)² - 5</span> → passt zu s</p>
-            <p>p₂: <span class="formel">y = x² + 2x - 4 = (x + 1)² - 1 - 4 = (x + 1)² - 5</span> → kein Match</p>
-            <p>p₃: <span class="formel">y = x² + 4x + 1 = (x + 2)² - 4 + 1 = (x + 2)² - 3</span> → passt zu t</p>
-            <p>p₄: <span class="formel">y = x² - 4x + 1 = (x - 2)² - 4 + 1 = (x - 2)² - 3</span> → kein Match</p>
-            <p><b>Zuordnung:</b> p₁ → s, p₃ → t (andere haben keine direkte Entsprechung).</p>
-        </div>
-    </div>
+        // Solution toggles
+        document.querySelectorAll('.solution-toggle').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const solutionContainer = document.getElementById(targetId);
+                
+                if (solutionContainer.classList.contains('show')) {
+                    solutionContainer.classList.remove('show');
+                    this.textContent = 'Lösung anzeigen';
+                } else {
+                    solutionContainer.classList.add('show');
+                    this.textContent = 'Lösung verbergen';
+                }
+            });
+        });
 
+        // Exercise navigation
+        const exercises = document.querySelectorAll('.exercise-content');
+        const tabs = document.querySelectorAll('.exercise-tab');
+        let currentExercise = 1;
+        
+        function showExercise(exerciseNum) {
+            exercises.forEach(e => e.classList.remove('active'));
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(`exercise${exerciseNum}`).classList.add('active');
+            tabs[exerciseNum - 1].classList.add('active');
+            currentExercise = exerciseNum;
+            
+            // Render/update charts when switching to the exercise
+            if (exerciseNum === 1) {
+                updateLinearChart();
+            } else if (exerciseNum === 2) {
+                updateParabolaChart();
+            } else if (exerciseNum === 3) {
+                updateStretchSqueezePrabola();
+            } else if (exerciseNum === 4) {
+                updateVertexParabolaChart();
+            }
+        }
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const exerciseNum = this.getAttribute('data-exercise');
+                showExercise(parseInt(exerciseNum));
+            });
+        });
+        
+        document.getElementById('prevExercise').addEventListener('click', function() {
+            if (currentExercise > 1) {
+                showExercise(currentExercise - 1);
+            }
+        });
+        
+        document.getElementById('nextExercise').addEventListener('click', function() {
+            if (currentExercise < 5) {
+                showExercise(currentExercise + 1);
+            }
+        });
+
+        // Linear Chart (Aufgabe 1)
+        let linearChart;
+        function createLinearChart() {
+            const ctx = document.getElementById('linearChart').getContext('2d');
+            linearChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'y = x + 1',
+                            data: [],
+                            borderColor: '#5D5CDE',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'y = 3x - 1',
+                            data: [],
+                            borderColor: '#FF6B6B',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'center',
+                            grid: {
+                                color: 'rgba(200, 200, 200, 0.2)'
+                            },
+                            min: -5,
+                            max: 5
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'center',
+                            grid: {
+                                color: 'rgba(200, 200, 200, 0.2)'
+                            },
+                            min: -5,
+                            max: 15
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const x = context.parsed.x;
+                                    const y = context.parsed.y;
+                                    return `(${x.toFixed(1)}, ${y.toFixed(1)})`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 500
+                    }
+                }
+            });
+        }
+
+        function updateLinearChart() {
+            if (!linearChart) createLinearChart();
+            
+            const line1Type = document.getElementById('line1Selector').value;
+            const line2Type = document.getElementById('line2Selector').value;
+            
+            // Define line functions
+            const lineFunctions = {
+                a: x => x + 1, // y = x + 1
+                b: x => 3 * x - 1, // y = 3x - 1
+                c: x => (2/3) * x + 2/3, // y = (2/3)x + 2/3
+                d: x => x + 1 // y = x + 1 (same as a)
+            };
+            
+            // Generate data points
+            const datasets = [];
+            const xValues = Array.from({length: 101}, (_, i) => -5 + i * 0.1);
+            
+            // Line 1 data
+            const line1Data = xValues.map(x => ({x, y: lineFunctions[line1Type](x)}));
+            const line1Label = getLineLabel(line1Type);
+            
+            // Line 2 data
+            const line2Data = xValues.map(x => ({x, y: lineFunctions[line2Type](x)}));
+            const line2Label = getLineLabel(line2Type);
+            
+            // Update chart
+            linearChart.data.datasets[0].data = line1Data;
+            linearChart.data.datasets[0].label = line1Label;
+            linearChart.data.datasets[1].data = line2Data;
+            linearChart.data.datasets[1].label = line2Label;
+            
+            // Find intersection points
+            const intersection = findIntersection(line1Type, line2Type);
+            
+            // Adjust scales if needed based on intersection
+            const minY = Math.min(...line1Data.concat(line2Data).map(p => p.y));
+            const maxY = Math.max(...line1Data.concat(line2Data).map(p => p.y));
+            
+            linearChart.options.scales.y.min = Math.floor(Math.min(-2, minY));
+            linearChart.options.scales.y.max = Math.ceil(Math.max(10, maxY));
+            
+            // Add intersection point as annotation if exists
+            linearChart.data.datasets = [
+                {
+                    label: line1Label,
+                    data: line1Data,
+                    borderColor: '#5D5CDE',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    pointRadius: 0
+                },
+                {
+                    label: line2Label,
+                    data: line2Data,
+                    borderColor: '#FF6B6B',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    pointRadius: 0
+                }
+            ];
+
+            // Add intersection point if it exists
+            if (intersection) {
+                linearChart.data.datasets.push({
+                    label: 'Schnittpunkt',
+                    data: [{x: intersection.x, y: intersection.y}],
+                    backgroundColor: '#4caf50',
+                    borderColor: '#4caf50',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                });
+            }
+            
+            linearChart.update();
+        }
+
+        function getLineLabel(lineType) {
+            switch(lineType) {
+                case 'a': return 'a) y = x + 1';
+                case 'b': return 'b) y = 3x - 1';
+                case 'c': return 'c) y = (2/3)x + 2/3';
+                case 'd': return 'd) y = x + 1';
+                default: return '';
+            }
+        }
+
+        function findIntersection(line1, line2) {
+            // If same line, infinite intersection points
+            if (line1 === line2 || (line1 === 'a' && line2 === 'd') || (line1 === 'd' && line2 === 'a')) {
+                return null;
+            }
+            
+            // Known intersections from the problem
+            if ((line1 === 'a' && line2 === 'b') || (line1 === 'b' && line2 === 'a')) {
+                return {x: 1, y: 2};
+            }
+            if ((line1 === 'a' && line2 === 'c') || (line1 === 'c' && line2 === 'a')) {
+                return {x: -1, y: 0};
+            }
+            if ((line1 === 'b' && line2 === 'c') || (line1 === 'c' && line2 === 'b')) {
+                // Calculate for this case
+                // 3x - 1 = (2/3)x + 2/3
+                // 3x - (2/3)x = 2/3 + 1
+                // (7/3)x = 5/3
+                // x = 5/7
+                // y = 3*(5/7) - 1 = 15/7 - 7/7 = 8/7
+                return {x: 5/7, y: 8/7};
+            }
+            if ((line1 === 'b' && line2 === 'd') || (line1 === 'd' && line2 === 'b')) {
+                return {x: 1, y: 2};
+            }
+            if ((line1 === 'c' && line2 === 'd') || (line1 === 'd' && line2 === 'c')) {
+                return {x: -1, y: 0};
+            }
+            
+            return null;
+        }
+
+        document.getElementById('line1Selector').addEventListener('change', updateLinearChart);
+        document.getElementById('line2Selector').addEventListener('change', updateLinearChart);
+
+        // Parabola Chart (Aufgabe 2)
+        let parabolaChart;
+        function createParabolaChart() {
+            const ctx = document.getElementById('parabolaChart').getContext('2d');
+            parabolaChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Parabel 1: y = x² + 2x',
+                            data: [],
+                            borderColor: '#5D5CDE',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Parabel 2: y = x² + 2x - 1',
+                            data: [],
+                            borderColor: '#FF6B6B',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Parabel 3: y = x² + 2x + 2',
+                            data: [],
+                            borderColor: '#4caf50',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'center',
+                            grid: {
+                                color: 'rgba(200, 200, 200, 0.2)'
+                            },
+                            min: -5,
+                            max: 3
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'center',
+                            grid: {
+                                color: 'rgba(200, 200, 200, 0.2)'
+                            },
+                            min: -5,
+                            max: 10
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const x = context.parsed.x;
+                                    const y = context.parsed.y;
+                                    return `(${x.toFixed(1)}, ${y.toFixed(1)})`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 500
+                    }
+                }
+            });
+        }
+
+        function updateParabolaChart() {
+            if (!parabolaChart) createParabolaChart();
+            
+            const parabolaFunctions = [
+                x => x*x + 2*x,       // Parabel 1: y = x² + 2x
+                x => x*x + 2*x - 1,   // Parabel 2: y = x² + 2x - 1
+                x => x*x + 2*x + 2    // Parabel 3: y = x² + 2x + 2
+            ];
+            
+            // Generate data points
+            const xValues = Array.from({length: 101}, (_, i) => -5 + i * 0.08);
+            
+            // Update each dataset
+            parabolaChart.data.datasets.forEach((dataset, i) => {
+                // Skip if checkbox is unchecked
+                const checkbox = document.querySelector(`.parabola-checkbox[data-index="${i}"]`);
+                if (checkbox && !checkbox.checked) {
+                    dataset.data = [];
+                    return;
+                }
+                
+                dataset.data = xValues.map(x => ({x, y: parabolaFunctions[i](x)}));
+            });
+            
+            // Add special points: zeros and vertices
+            const specialPoints = [
+                // Vertex and zeros for Parabel 1
+                {x: -1, y: -1, label: 'Scheitel P1', color: '#5D5CDE'},
+                {x: 0, y: 0, label: 'Nullstelle P1', color: '#5D5CDE'},
+                {x: -2, y: 0, label: 'Nullstelle P1', color: '#5D5CDE'},
+                
+                // Vertex and zeros for Parabel 2
+                {x: -1, y: -2, label: 'Scheitel P2', color: '#FF6B6B'},
+                {x: -2.414, y: 0, label: 'Nullstelle P2', color: '#FF6B6B'},
+                {x: 0.414, y: 0, label: 'Nullstelle P2', color: '#FF6B6B'},
+                
+                // Vertex for Parabel 3 (no zeros)
+                {x: -1, y: 1, label: 'Scheitel P3', color: '#4caf50'}
+            ];
+            
+            // Show vertex and zeros
+            parabolaChart.data.datasets = parabolaChart.data.datasets.slice(0, 3); // Remove any existing special points
+            
+            // Add special points datasets only if their parabola is visible
+            specialPoints.forEach(point => {
+                let parabIndex;
+                if (point.color === '#5D5CDE') parabIndex = 0;
+                else if (point.color === '#FF6B6B') parabIndex = 1;
+                else if (point.color === '#4caf50') parabIndex = 2;
+                
+                const checkbox = document.querySelector(`.parabola-checkbox[data-index="${parabIndex}"]`);
+                if (checkbox && checkbox.checked) {
+                    parabolaChart.data.datasets.push({
+                        label: point.label,
+                        data: [{x: point.x, y: point.y}],
+                        backgroundColor: point.color,
+                        borderColor: point.color,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    });
+                }
+            });
+            
+            parabolaChart.update();
+        }
+
+        document.querySelectorAll('.parabola-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updateParabolaChart);
+        });
+
+        // Stretch/Squeeze Parabola (Aufgabe 3)
+        let stretchSqueezePrabola;
+        function createStretchSqueezePrabola() {
+            const ctx = document.getElementById('stretchSqueezePrabola').getContext('2d');
+            stretchSqueezePrabola = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'p₁: y = ½x²',
+                            data: [],
+                            borderColor: '#5D5CDE',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'p₂: y = -½x²',
+                            data: [],
+                            borderColor: '#FF6B6B',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'y = ax²',
+                            data: [],
+                            borderColor: '#FFA500',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            borderDash: [5, 5]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'center',
+                            grid: {
+                                color: 'rgba(200, 200, 200, 0.2)'
+                            },
+                            min: -5,
+                            max: 5
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'center',
+                            grid: {
+                                color: 'rgba(200, 200, 200, 0.2)'
+                            },
+                            min: -10,
+                            max: 10
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const x = context.parsed.x;
+                                    const y = context.parsed.y;
+                                    return `(${x.toFixed(1)}, ${y.toFixed(1)})`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 500
+                    }
+                }
+            });
+        }
+
+        function updateStretchSqueezePrabola() {
+            if (!stretchSqueezePrabola) createStretchSqueezePrabola();
+            
+            const a = parseFloat(document.getElementById('parabolaFactor').value);
+            document.getElementById('factorValue').textContent = `a = ${a}`;
+            
+            const parabolaFunctions = [
+                x => 0.5 * x * x,      // p₁: y = ½x²
+                x => -0.5 * x * x,     // p₂: y = -½x²
+                x => a * x * x         // Custom: y = ax²
+            ];
+            
+            // Generate data points
+            const xValues = Array.from({length: 101}, (_, i) => -5 + i * 0.1);
+            
+            // Update datasets
+            stretchSqueezePrabola.data.datasets.forEach((dataset, i) => {
+                dataset.data = xValues.map(x => ({x, y: parabolaFunctions[i](x)}));
+                
+                // Update custom parabola label
+                if (i === 2) {
+                    dataset.label = `y = ${a}x²`;
+                }
+            });
+            
+            stretchSqueezePrabola.update();
+        }
+
+        document.getElementById('parabolaFactor').addEventListener('input', updateStretchSqueezePrabola);
+
+        // Vertex Parabola Chart (Aufgabe 4)
+        let vertexParabolaChart;
+        function createVertexParabolaChart() {
+            const ctx = document.getElementById('vertexParabolaChart').getContext('2d');
+            vertexParabolaChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'y = x² + 8x + 17',
+                            data: [],
+                            borderColor: '#5D5CDE',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'center',
+                            grid: {
+                                color: 'rgba(200, 200, 200, 0.2)'
+                            },
+                            min: -10,
+                            max: 15
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'center',
+                            grid: {
+                                color: 'rgba(200, 200, 200, 0.2)'
+                            },
+                            min: -60,
+                            max: 20
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const x = context.parsed.x;
+                                    const y = context.parsed.y;
+                                    return `(${x.toFixed(1)}, ${y.toFixed(1)})`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 500
+                    }
+                }
+            });
+        }
+
+        function updateVertexParabolaChart() {
+            if (!vertexParabolaChart) createVertexParabolaChart();
+            
+            const parabolaFunctions = [
+                x => x*x + 8*x + 17,    // a) y = x² + 8x + 17
+                x => x*x - 20*x + 50,   // b) y = x² - 20x + 50
+                x => x*x - 7*x          // c) y = x² - 7x
+            ];
+            
+            const parabolaLabels = [
+                'a) y = x² + 8x + 17',
+                'b) y = x² - 20x + 50',
+                'c) y = x² - 7x'
+            ];
+            
+            const parabolaColors = [
+                '#5D5CDE',  // Blau
+                '#FF6B6B',  // Rot
+                '#4caf50'   // Grün
+            ];
+            
+            const vertices = [
+                {x: -4, y: 1},       // Scheitelpunkt für Parabel 1
+                {x: 10, y: -50},     // Scheitelpunkt für Parabel 2
+                {x: 3.5, y: -12.25}  // Scheitelpunkt für Parabel 3
+            ];
+            
+            // Setze Achsenskala so, dass alle Parabeln sichtbar sind
+            vertexParabolaChart.options.scales.x.min = -8;
+            vertexParabolaChart.options.scales.x.max = 15;
+            vertexParabolaChart.options.scales.y.min = -55;
+            vertexParabolaChart.options.scales.y.max = 25;
+            
+            // Generiere Datenpunkte für alle Parabeln
+            vertexParabolaChart.data.datasets = [];
+            
+            // Füge Parabeln hinzu basierend auf Checkbox-Status
+            for (let i = 0; i < 3; i++) {
+                const checkbox = document.querySelector(`.vertex-parabola-checkbox[data-index="${i}"]`);
+                if (checkbox && checkbox.checked) {
+                    // Werte für diese Parabel berechnen
+                    const xMin = i === 0 ? -8 : (i === 1 ? 0 : -2);
+                    const xMax = i === 0 ? 0 : (i === 1 ? 20 : 9);
+                    const xValues = Array.from({length: 101}, (_, j) => xMin + j * (xMax - xMin) / 100);
+                    
+                    // Parabel hinzufügen
+                    vertexParabolaChart.data.datasets.push({
+                        label: parabolaLabels[i],
+                        data: xValues.map(x => ({x, y: parabolaFunctions[i](x)})),
+                        borderColor: parabolaColors[i],
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        pointRadius: 0
+                    });
+                    
+                    // Scheitelpunkt hinzufügen
+                    vertexParabolaChart.data.datasets.push({
+                        label: `Scheitelpunkt ${i+1}`,
+                        data: [vertices[i]],
+                        backgroundColor: parabolaColors[i],
+                        borderColor: parabolaColors[i],
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    });
+                }
+            }
+            
+            vertexParabolaChart.update();
+        }
+
+        document.querySelectorAll('.vertex-parabola-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updateVertexParabolaChart);
+        });
+
+        // Drag and drop for equation matching (Aufgabe 5)
+        function initDragAndDrop() {
+            const dragItems = document.querySelectorAll('.drag-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+            let draggedItem = null;
+            
+            dragItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    draggedItem = this;
+                    setTimeout(() => this.style.opacity = '0.5', 0);
+                });
+                
+                item.addEventListener('dragend', function() {
+                    this.style.opacity = '1';
+                });
+            });
+            
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.style.backgroundColor = 'rgba(93, 92, 222, 0.2)';
+                });
+                
+                zone.addEventListener('dragleave', function() {
+                    this.style.backgroundColor = '';
+                });
+                
+                zone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.style.backgroundColor = '';
+                    
+                    if (draggedItem) {
+                        // Remove item from other zones
+                        dropZones.forEach(z => {
+                            const existingItems = z.querySelectorAll('.drag-item');
+                            existingItems.forEach(existingItem => {
+                                if (existingItem.getAttribute('data-id') === draggedItem.getAttribute('data-id')) {
+                                    z.removeChild(existingItem);
+                                }
+                            });
+                        });
+                        
+                        // Add to new zone
+                        const clonedItem = draggedItem.cloneNode(true);
+                        clonedItem.style.opacity = '1';
+                        clonedItem.style.marginTop = '8px';
+                        this.appendChild(clonedItem);
+                    }
+                });
+            });
+        }
+
+        document.getElementById('checkMatchesBtn').addEventListener('click', function() {
+            const dropZones = document.querySelectorAll('.drop-zone');
+            let allCorrect = true;
+            
+            dropZones.forEach(zone => {
+                const correctItem = zone.getAttribute('data-correct');
+                const items = zone.querySelectorAll('.drag-item');
+                
+                if (correctItem === 'none' && items.length > 0) {
+                    allCorrect = false;
+                    zone.style.borderColor = '#ff4d4d';
+                } else if (correctItem !== 'none') {
+                    if (items.length === 0) {
+                        allCorrect = false;
+                        zone.style.borderColor = '#ff4d4d';
+                    } else {
+                        const item = items[0];
+                        if (item.getAttribute('data-id') !== correctItem) {
+                            allCorrect = false;
+                            zone.style.borderColor = '#ff4d4d';
+                        } else {
+                            zone.style.borderColor = '#4CAF50';
+                        }
+                    }
+                } else {
+                    zone.style.borderColor = '#4CAF50';
+                }
+            });
+            
+            const feedback = document.getElementById('matchFeedback');
+            feedback.classList.remove('hidden');
+            if (allCorrect) {
+                feedback.textContent = 'Richtig! Deine Zuordnung ist korrekt.';
+                feedback.style.color = '#4CAF50';
+            } else {
+                feedback.textContent = 'Nicht ganz. Versuche es noch einmal!';
+                feedback.style.color = '#ff4d4d';
+            }
+        });
+
+        document.getElementById('resetMatchesBtn').addEventListener('click', function() {
+            const dropZones = document.querySelectorAll('.drop-zone');
+            dropZones.forEach(zone => {
+                const items = zone.querySelectorAll('.drag-item');
+                items.forEach(item => zone.removeChild(item));
+                zone.style.borderColor = '#e5e7eb';
+            });
+            
+            const feedback = document.getElementById('matchFeedback');
+            feedback.classList.add('hidden');
+        });
+
+        // Init everything when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLinearChart();
+            updateParabolaChart();
+            updateStretchSqueezePrabola();
+            updateVertexParabolaChart();
+            initDragAndDrop();
+        });
+    </script>
 </body>
 </html>
